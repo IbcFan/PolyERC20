@@ -3,7 +3,7 @@
     "symbol": "TST",
     "chainDetails": [
         {
-            "rpcEnvName": "ETHEREUM_GOERLI_RPC",
+            "rpcEnvName": "OPTIMISM_SEPOLIA_RPC",
             "erc20": "0x0000000000000000000000000000000000000001",
             "governor": "0x0000000000000000000000000000000000000002",
             "isNativeGasToken": false,

@@ -133,7 +133,7 @@ Decide on which blockchains you want to deploy your token and the initial config
     "symbol": "TST", // The symbol of your xERC20.
     "chainDetails": [ // The chains that the xERC20 token will be deployed to.
         {
-            "rpcEnvName": "ETHEREUM_GOERLI_RPC", // The name of the RPC to use. It should be added in the .env file.
+            "rpcEnvName": "OPTIMISM_SEPOLIA_RPC", // The name of the RPC to use. It should be added in the .env file.
             "erc20": "0x0000000000000000000000000000000000000001", // The address of the canonical token representation for that chain. A lockbox will be deployed pairing the deployed xERC20 with the specified ERC20 1:1. address(0) in case there is non. 
             "governor": "0x0000000000000000000000000000000000000002", // The owner of the xERC20.
             "isNativeGasToken": false, // True if the ERC20 token is the native gas token of the chain. Ex: ETH for ethereum or MATIC for polygon.

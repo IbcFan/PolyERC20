@@ -7,13 +7,13 @@
     "compiler-version": [
       "off"
     ],
-    "constructor-syntax": "warn",
+    "constructor-syntax": "info",
     "quotes": [
       "error",
       "single"
     ],
     "func-visibility": [
-      "warn",
+      "info",
       {
         "ignoreConstructors": true
       }
@@ -25,40 +25,40 @@
     "no-inline-assembly": "off",
     "no-empty-blocks": "off",
     "private-vars-leading-underscore": [
-      "warn",
+      "info",
       {
         "strict": false
       }
     ],
     "defi-wonderland/non-state-vars-leading-underscore": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/contract-data-order": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/enum-name-camelcase": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/immutable-name-snakecase": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/import-statement-format": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/interface-member-order": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/interface-starts-with-i": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/named-return-values": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/struct-name-camelcase": [
-      "warn"
+      "info"
     ],
     "defi-wonderland/wonder-var-name-mixedcase": [
-      "warn"
+      "info"
     ],
     "avoid-low-level-calls": "off",
     "func-named-parameters": "off"

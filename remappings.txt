@@ -5,3 +5,5 @@ isolmate/=lib/isolmate/src
 @openzeppelin/=lib/openzeppelin-contracts
 permit2/=lib/permit2
 @open-ibc/vibc-core-smart-contracts/=lib/vibc-core-smart-contracts/
+optimism/=lib/vibc-core-smart-contracts/lib/optimism/packages/contracts-bedrock/src/
+src/=lib/vibc-core-smart-contracts/lib/optimism/packages/contracts-bedrock/src/

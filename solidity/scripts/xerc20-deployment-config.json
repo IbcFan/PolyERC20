@@ -14,6 +14,19 @@
                     "mintLimit": 1000e18
                 }
             ]
+        },
+        {
+            "rpcEnvName": "BASE_SEPOLIA_RPC",
+            "erc20": "0x0000000000000000000000000000000000000000",
+            "governor": "0x0000000000000000000000000000000000000002",
+            "isNativeGasToken": false,
+            "bridgeDetails": [
+                {
+                    "bridge": "0x0000000000000000000000000000000000000003",
+                    "burnLimit": 1000e18,
+                    "mintLimit": 1000e18
+                }
+            ]
         }
     ]
 }

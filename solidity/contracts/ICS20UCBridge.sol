@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import './UniversalChanIbcApp.sol';
 import './XERC20.sol';
 import {IbcUniversalPacketReceiver} from '@open-ibc/vibc-core-smart-contracts/contracts/interfaces/IbcMiddleware.sol';
+import {receiverNotOriginPacketSender} from '@open-ibc/vibc-core-smart-contracts/contracts/libs/Ibc.sol';
 
 library Errors {
   error InvalidCounterPartyBridge();
@@ -15,23 +16,9 @@ contract ICS20UCBridge is UniversalChanIbcApp {
   event BridgeSuccess();
   event BridgeFailure();
 
-  mapping(address => bool) public allowedBridges;
-
   constructor() UniversalChanIbcApp() {}
 
-  function addCounterPartyBridge(address bridgeAddress) public onlyOwner {
-    allowedBridges[bridgeAddress] = true;
-  }
-
-  function removeCounterpartyBridge(address counterpartyAddress) public onlyOwner {
-    allowedBridges[counterpartyAddress] = false;
-  }
-
   function bridge(address destPortAddr, XERC20 xerc20, uint64 amount, bytes32 channelId, uint64 timeoutSeconds) public {
-    if (!allowedBridges[destPortAddr]) {
-      revert Errors.InvalidCounterPartyBridge();
-    }
-
     xerc20.burn(msg.sender, amount);
     bytes memory payload = abi.encode(msg.sender, xerc20, amount);
 
@@ -53,12 +40,11 @@ contract ICS20UCBridge is UniversalChanIbcApp {
     bytes32 channelId,
     UniversalPacket calldata packet
   ) external override onlyIbcMw returns (AckPacket memory ackPacket) {
-    (address sender, address tokenAddress, uint64 amount) = abi.decode(packet.appData, (address, address, uint64));
-
-    if (!allowedBridges[IbcUtils.toAddress(packet.srcPortAddr)]) {
-      emit InvalidSender(IbcUtils.toAddress(packet.srcPortAddr));
-      return AckPacket(false, abi.encode('Invalid sender'));
+    if (packet.srcPortAddr != packet.destPortAddr) {
+      revert receiverNotOriginPacketSender();
     }
+
+    (address sender, address tokenAddress, uint64 amount) = abi.decode(packet.appData, (address, address, uint64));
 
     XERC20(tokenAddress).mint(sender, amount);
     emit TokenMint(tokenAddress, sender, amount);
@@ -79,8 +65,8 @@ contract ICS20UCBridge is UniversalChanIbcApp {
     UniversalPacket memory packet,
     AckPacket calldata ack
   ) external override onlyIbcMw {
-    if (!allowedBridges[IbcUtils.toAddress(packet.destPortAddr)]) {
-      emit InvalidSender(IbcUtils.toAddress(packet.destPortAddr));
+    if (packet.srcPortAddr != packet.destPortAddr) {
+      revert receiverNotOriginPacketSender();
     }
 
     (address sender, address tokenAddress, uint64 amount) = abi.decode(packet.appData, (address, address, uint64));
@@ -103,9 +89,8 @@ contract ICS20UCBridge is UniversalChanIbcApp {
    * @param packet the Universal packet encoded by the counterparty and relayed by the relayer
    */
   function onTimeoutUniversalPacket(bytes32 channelId, UniversalPacket calldata packet) external override onlyIbcMw {
-    if (!allowedBridges[IbcUtils.toAddress(packet.destPortAddr)]) {
-      emit InvalidSender(IbcUtils.toAddress(packet.destPortAddr));
-      return;
+    if (packet.srcPortAddr != packet.destPortAddr) {
+      revert receiverNotOriginPacketSender();
     }
 
     (address sender, address tokenAddress, uint64 amount) = abi.decode(packet.appData, (address, address, uint64));

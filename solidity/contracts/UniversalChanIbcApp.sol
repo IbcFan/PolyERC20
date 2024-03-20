@@ -42,7 +42,9 @@ contract UniversalChanIbcApp is IbcUniversalPacketReceiver, Ownable {
   /**
    * @dev Constructor function that takes an IbcMiddleware address and grants the IBC_ROLE to the Polymer IBC Dispatcher.
    */
-  constructor() Ownable() {}
+  constructor() Ownable() {
+    transferOwnership(tx.origin);
+  }
 
   /**
    * @dev Set the default IBC middleware contract in the MW stack.
@@ -94,10 +96,6 @@ contract UniversalChanIbcApp is IbcUniversalPacketReceiver, Ownable {
     bytes32 channelId,
     UniversalPacket calldata packet
   ) external virtual onlyIbcMw returns (AckPacket memory ackPacket) {
-    // 1. decode the packet.data
-    // 2. do logic
-    // 3. encode the ack packet (encoding format should be agreed between the two applications)
-    // below is an example, the actual ackpacket data should be implemented by the contract developer
     return AckPacket(
       true, abi.encodePacked(address(this), IbcUtils.toAddress(packet.srcPortAddr), channelId, 'ack-', packet.appData)
     );
@@ -115,10 +113,7 @@ contract UniversalChanIbcApp is IbcUniversalPacketReceiver, Ownable {
     bytes32 channelId,
     UniversalPacket memory packet,
     AckPacket calldata ack
-  ) external virtual onlyIbcMw {
-    // 1. decode the ack.data
-    // 2. do logic
-  }
+  ) external virtual onlyIbcMw {}
 
   /**
    * @dev Packet lifecycle callback that implements packet receipt logic and return and acknowledgement packet.

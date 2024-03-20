@@ -10,6 +10,10 @@ _XERC20Lockbox_: The lockbox works as a wrapper of an ERC20. It mints XERC20 tok
 
 _XERC20Factory_: The factory is used as a helper to deploy an xToken. It allows the owner to deploy the XERC20 and the Lockbox in one transaction while keeping the same token address on every chain used.
 
+_ICS20Bridge_: A bridge that uses the ICS20 standard to transfer tokens between chains using a custom IBC channel.
+
+_ICS20UCBridge_: A bridge that uses the ICS20 standard to transfer tokens between chains using a universal IBC channel.
+
 ### Architectural Spec
 
 <img width="863" src="./assets/architectural-specs.png?raw=true">
@@ -99,27 +103,24 @@ You will need to set your custom `name` and `symbol` for your XERC20 to be deplo
 
 This guide provides a detailed, step-by-step process to deploy an xERC20 token using this repository. We will first demonstrate how to deploy the xERC20 token alone, and then we’ll cover the scenario in which you want to deploy both the xERC20 token and the lockbox.
 
-## Deploying xERC20 Without the Lockbox
+## Deploying xERC20 Without the Lockbox using Universal Channel Bridge
 
 > [!IMPORTANT]
 > Verifying contracts deployed with --via-ir is not working correctly with Foundry.
 > Read the following post for a solution: https://github.com/foundry-rs/foundry/issues/3507#issuecomment-1465382107
 
-### 1. Navigate to the XERC20Deploy Script
+### 1. Configure the environment
 
-Locate and open the `XERC20Deploy.sol` file, which should be situated within the `solidity/scripts` directory.
+Ensure that you have all the env values set in your .env file to support these networks. Use .env.example as a reference.
+`XERC20_ADDRESS` can be left empty for now. It will be filled after the token deployment.
 
-### 2. Configure the Target Chains
-
-Ensure that you have the corresponding RPC URLs added in your .env file to support these networks. Refer to this section for more information on setting up your environment variables.
-
-### 3. Decide which Chains need a Lockbox
+### 2. Decide which Chains need a Lockbox
 
 Identify the blockchain networks where your token is already deployed and has a canonical representation. On these specific networks, a Lockbox will be required to facilitate interactions. The Lockbox is a contract wrapper that allows users to make the swap between xERC20<->ERC20 1:1. To deploy a lockbox you will need to configure the `erc20` value in the deployment config. This value should be the address of the canonical representation of the token in that chain. Using this value means that a lockbox will be deployed.
 
-If you don't need a lockbox for a chain specify `"erc20": "0x0000000000000000000000000000000000000000",`.
+If you don't need a lockbox for a chain specify `"erc20": "0x0000000000000000000000000000000000000000",` in `/solidity/scripts/xerc20-deployment-config.json`.
 
-### 4. Update the deployment config
+### 3. Update the deployment config
 
 Decide on which blockchains you want to deploy your token and the initial configs for the bridges. After that, update the config file located in `/solidity/scripts/xerc20-deployment-config.json`:
 
@@ -135,11 +136,10 @@ Decide on which blockchains you want to deploy your token and the initial config
         {
             "rpcEnvName": "OPTIMISM_SEPOLIA_RPC", // The name of the RPC to use. It should be added in the .env file.
             "erc20": "0x0000000000000000000000000000000000000001", // The address of the canonical token representation for that chain. A lockbox will be deployed pairing the deployed xERC20 with the specified ERC20 1:1. address(0) in case there is non. 
-            "governor": "0x0000000000000000000000000000000000000002", // The owner of the xERC20.
             "isNativeGasToken": false, // True if the ERC20 token is the native gas token of the chain. Ex: ETH for ethereum or MATIC for polygon.
             "bridgeDetails": [ // The bridges to be configured for the xERC20 token on this particular chain.
                 {
-                    "bridge": "0x0000000000000000000000000000000000000003", // The bridge address.
+                    "bridge": "0x0000000000000000000000000000000000000003", // The bridge address. Can be leave as is if a bridge hasn't been deployed yet.
                     "burnLimit": 1000e18, // The bridge burn limit.
                     "mintLimit": 1000e18  // The bridge mint limit.
                 }
@@ -153,7 +153,7 @@ Decide on which blockchains you want to deploy your token and the initial config
 
 Save your changes to proceed.
 
-### 5. Compile Your Smart Contract
+### 4. Compile Your Smart Contract
 
 Ensure that everything in your smart contract is set up correctly and free of errors by compiling it with the following command:
 
@@ -165,7 +165,7 @@ You should see a confirmation in your terminal, similar to the screenshot below:
 
 ![Screenshot 2023-10-27 at 1 59 00 PM](https://github.com/prathmeshkhandelwal1/Chat-App/assets/56167998/e05f8c07-ac4c-4a36-a9ae-05884ff5aad4)
 
-### 6. Dry-Run Deployment
+### 5. Dry-Run Deployment
 
 Before proceeding with the actual deployment of your token, it is crucial to perform a dry-run. This helps in verifying the deployment process and estimating the gas costs on all the selected chains. Run the following command to initiate a dry-run:
 
@@ -179,17 +179,37 @@ You will receive the xERC20 token address, transaction details, and gas estimate
 
 ![Screenshot 2023-10-27 at 2 05 23 PM](https://github.com/prathmeshkhandelwal1/Chat-App/assets/56167998/0654c085-4f41-4cf0-b940-8030ba396fec)
 
-### 7. Deploy Your xERC20 Token
+### 6. Deploy Your xERC20 Token
 
-You are now at the final step of the deployment process. With all the previous steps successfully completed, you are ready to deploy your xERC20 token to the selected blockchain networks. Run the following command to initiate the deployment:
+You are now at the final step of the token deployment process. With all the previous steps successfully completed, you are ready to deploy your xERC20 token to the selected blockchain networks. Run the following command to initiate the deployment:
 
 ```sh
 yarn run script:DeployXERC20:broadcast
 ```
 
 Congratulations! You have successfully deployed your xERC20 token. 🚀
+In the logs you should see an address of the newly deployed xERC20 token. Save this address to .env file for future use.
 
 See the [Foundry Book for available options](https://book.getfoundry.sh/reference/forge/forge-create.html).
+
+### 7. Deploy Your xERC20 Bridge
+
+To transfer your xERC20 token between chains, you will need to deploy a bridge. The bridge is a contract that allows you to transfer your xERC20 token between chains.
+
+```sh
+yarn run script:UC:DeployBridge:broadcast
+```
+
+Congratulations! You have successfully deployed your xERC20 bridge. 🚀
+
+### 8. Bridge your first xERC20 tokens
+
+```sh
+yarn run script:UC:TransferTokens:broadcast
+```
+
+The tokens will be transferred from Optimism Sepolia to Base Sepolia.
+
 
 ## Licensing
 

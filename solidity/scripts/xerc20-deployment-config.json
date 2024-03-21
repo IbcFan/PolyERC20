@@ -1,6 +1,6 @@
 {
-    "name": "Test3",
-    "symbol": "TST3",
+    "name": "Test",
+    "symbol": "TST",
     "chainDetails": [
         {
             "rpcEnvName": "OPTIMISM_SEPOLIA_RPC",

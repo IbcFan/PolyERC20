@@ -193,19 +193,36 @@ In the logs you should see an address of the newly deployed xERC20 token. Save t
 See the [Foundry Book for available options](https://book.getfoundry.sh/reference/forge/forge-create.html).
 
 ### 7. Deploy Your xERC20 Bridge
-
 To transfer your xERC20 token between chains, you will need to deploy a bridge. The bridge is a contract that allows you to transfer your xERC20 token between chains.
 
+#### 7.1  Using a universal channel
 ```sh
 yarn run script:UC:DeployBridge:broadcast
 ```
 
+#### 7.2  Using a custom channel
+```sh
+yarn run script:DeployBridge:broadcast
+```
+
 Congratulations! You have successfully deployed your xERC20 bridge. 🚀
 
-### 8. Bridge your first xERC20 tokens
+### 8. Create a custom channel if needed
+**DON'T DO** this if you deployed a bridge using a universal channel.
+```sh
+yarn run script:CreateChannel:broadcast
+```
 
+### 9. Bridge your first xERC20 tokens
+
+#### 9.1  Using a universal channel
 ```sh
 yarn run script:UC:TransferTokens:broadcast
+```
+
+#### 9.2  Using a custom channel
+```sh
+yarn run script:TransferTokens:broadcast
 ```
 
 The tokens will be transferred from Optimism Sepolia to Base Sepolia.

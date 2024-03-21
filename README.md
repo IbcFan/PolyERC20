@@ -103,7 +103,7 @@ You will need to set your custom `name` and `symbol` for your XERC20 to be deplo
 
 This guide provides a detailed, step-by-step process to deploy an xERC20 token using this repository. We will first demonstrate how to deploy the xERC20 token alone, and then we’ll cover the scenario in which you want to deploy both the xERC20 token and the lockbox.
 
-## Deploying xERC20 Without the Lockbox using Universal Channel Bridge
+## Deploying xERC20 Without the Lockbox
 
 > [!IMPORTANT]
 > Verifying contracts deployed with --via-ir is not working correctly with Foundry.
@@ -227,6 +227,26 @@ yarn run script:TransferTokens:broadcast
 
 The tokens will be transferred from Optimism Sepolia to Base Sepolia.
 
+
+## Deploying PolyERC20 token
+
+### 1. Configure the environment and the deployment config
+
+Follow the configuration steps from the guide above.
+
+
+### 2. Deploy the PolyERC20 token
+
+```sh
+yarn run script:DeployPolyToken:broadcast
+```
+
+
+### 3. Transfer tokens
+
+```sh
+yarn run script:TransferPolyTokens:broadcast
+```
 
 ## Licensing
 

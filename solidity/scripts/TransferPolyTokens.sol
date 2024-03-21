@@ -21,15 +21,16 @@ contract TransferPolyTokens is Script, ScriptingLibrary {
   }
 
   function run() public {
+    string memory _json = vm.readFile('./solidity/scripts/xerc20-deployment-config.json');
+    DeploymentConfig memory _data = abi.decode(_json.parseRaw('.'), (DeploymentConfig));
+
     vm.startBroadcast(deployer);
 
-    bytes memory creationCode = abi.encodePacked(type(PolyERC20).creationCode, abi.encode('PolyToken', 'POLY'));
+    bytes memory creationCode = abi.encodePacked(type(PolyERC20).creationCode, abi.encode(_data.name, _data.symbol));
     address token = vm.computeCreate2Address(salt(), hashInitCode(creationCode));
 
     // solhint-disable-next-line no-console
     console.log('Token address: ', token);
-    // solhint-disable-next-line no-console
-    console.log('Deployer address: ', vm.addr(deployer));
 
     PolyERC20 erc20 = PolyERC20(payable(token));
     erc20.mint(vm.addr(deployer), 1000);

@@ -251,8 +251,3 @@ yarn run script:TransferPolyTokens:broadcast
 ## Licensing
 
 The primary license for xERC20 is MIT, see [LICENSE](./LICENSE).
-
-
-## Issues
-The factory hasn't been deployed to Base Sepolia so it had to be deployed manually to Optimism and Sepolia with a new salt.
-The new factory address is `0xcBd59B6c9F300Cc6E81b4b5DEAa55870f658eFF9`. The script to deploy XERC20 has to be updated to use this new factory address.

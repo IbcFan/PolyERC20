@@ -1,10 +1,10 @@
 {
-    "name": "Test",
-    "symbol": "TST",
+    "name": "PolyERC20",
+    "symbol": "POLY",
     "chainDetails": [
         {
             "rpcEnvName": "OPTIMISM_SEPOLIA_RPC",
-            "erc20": "0x0000000000000000000000000000000000000001",
+            "erc20": "0x0000000000000000000000000000000000000000",
             "isNativeGasToken": false,
             "bridgeDetails": [
                 {

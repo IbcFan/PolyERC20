@@ -12,11 +12,11 @@ contract PolyERC20 is UniversalChanIbcApp, ERC20 {
 
   constructor(string memory name, string memory symbol) ERC20(name, symbol) UniversalChanIbcApp() {}
 
-  function mint(address account, uint256 amount) public onlyOwner {
+  function mint(address account, uint256 amount) public virtual onlyOwner {
     _mint(account, amount);
   }
 
-  function burn(address account, uint256 amount) public onlyOwner {
+  function burn(address account, uint256 amount) public virtual onlyOwner {
     _burn(account, amount);
   }
 

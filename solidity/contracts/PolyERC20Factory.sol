@@ -26,30 +26,34 @@ contract PolyERC20Factory is UniversalChanIbcApp {
 
   constructor() UniversalChanIbcApp() {}
 
-  function deployXPolyERC20(
-    string[] memory channels,
-    string memory _name,
-    string memory _symbol,
-    bytes32 _salt,
-    uint256 _tokenSupply
-  ) external returns (PolyERC20FixedSupply token) {
-    return this.deployXPolyERC20(channels, _name, _symbol, _salt, _tokenSupply, 60);
+  function salt(string memory _salt) internal returns (bytes32) {
+    return keccak256(bytes(_salt));
   }
 
   function deployXPolyERC20(
     string[] memory channels,
     string memory _name,
     string memory _symbol,
-    bytes32 _salt,
     uint256 _tokenSupply,
+    string memory _salt
+  ) external returns (PolyERC20FixedSupply token) {
+    return this.deployXPolyERC20(channels, _name, _symbol, _tokenSupply, _salt, 60);
+  }
+
+  function deployXPolyERC20(
+    string[] memory channels,
+    string memory _name,
+    string memory _symbol,
+    uint256 _tokenSupply,
+    string memory _salt,
     uint64 timeoutSeconds
   ) external returns (PolyERC20FixedSupply token) {
     // deploy on the current chain
-    token = this.deployPolyERC20(_name, _symbol, _salt, _tokenSupply);
+    token = this.deployPolyERC20(_name, _symbol, _tokenSupply, _salt);
 
     // deploy to other chains
     for (uint256 i = 0; i < channels.length; i++) {
-      bytes memory payload = abi.encode(msg.sender, _name, _symbol, _salt, _tokenSupply);
+      bytes memory payload = abi.encode(msg.sender, _name, _symbol, _tokenSupply, _salt);
 
       uint64 timeoutTimestamp = uint64((block.timestamp + timeoutSeconds) * 1_000_000_000);
 
@@ -63,10 +67,10 @@ contract PolyERC20Factory is UniversalChanIbcApp {
   function deployPolyERC20(
     string memory _name,
     string memory _symbol,
-    bytes32 _salt,
-    uint256 _tokenSupply
+    uint256 _tokenSupply,
+    string memory _salt
   ) external returns (PolyERC20FixedSupply token) {
-    token = new PolyERC20FixedSupply{salt: _salt}(_name, _symbol, _tokenSupply);
+    token = new PolyERC20FixedSupply{salt: salt(_salt)}(_name, _symbol, _tokenSupply);
     return token;
   }
 
@@ -78,10 +82,10 @@ contract PolyERC20Factory is UniversalChanIbcApp {
       revert receiverNotOriginPacketSender();
     }
 
-    (address sender, string memory _name, string memory _symbol, bytes32 _salt, uint256 _tokenSupply) =
-      abi.decode(packet.appData, (address, string, string, bytes32, uint256));
+    (address sender, string memory _name, string memory _symbol, uint256 _tokenSupply, string memory _salt) =
+      abi.decode(packet.appData, (address, string, string, uint256, string));
 
-    PolyERC20FixedSupply token = this.deployPolyERC20(_name, _symbol, _salt, _tokenSupply);
+    PolyERC20FixedSupply token = this.deployPolyERC20(_name, _symbol, _tokenSupply, _salt);
     emit TokenMint(address(token), sender, _tokenSupply);
 
     return AckPacket(true, abi.encode(address(this)));
@@ -96,8 +100,8 @@ contract PolyERC20Factory is UniversalChanIbcApp {
       revert receiverNotOriginPacketSender();
     }
 
-    (address sender, string memory _name, string memory _symbol, bytes32 _salt, uint256 _tokenSupply) =
-      abi.decode(packet.appData, (address, string, string, bytes32, uint256));
+    (address sender, string memory _name, string memory _symbol, uint256 _tokenSupply, string memory _salt) =
+      abi.decode(packet.appData, (address, string, string, uint256, string));
 
     if (ack.success) {
       emit BridgeSuccess(channelId);
@@ -112,8 +116,8 @@ contract PolyERC20Factory is UniversalChanIbcApp {
       revert receiverNotOriginPacketSender();
     }
 
-    (address sender, string memory _name, string memory _symbol, string memory _salt, uint256 _tokenSupply) =
-      abi.decode(packet.appData, (address, string, string, string, uint256));
+    (address sender, string memory _name, string memory _symbol, uint256 _tokenSupply, string memory _salt) =
+      abi.decode(packet.appData, (address, string, string, uint256, string));
     emit BridgeFailure(channelId);
   }
 }

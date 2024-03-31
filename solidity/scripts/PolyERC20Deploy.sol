@@ -67,7 +67,7 @@ contract PolyERC20Deploy is Script {
       PolyERC20Factory factory = new PolyERC20Factory{salt: salt()}();
       factory.setDefaultMw(address(baseMW));
       PolyERC20FixedSupply basePolyToken =
-        factory.deployXPolyERC20(channels, _data.name, _data.symbol, salt(), 1_000_000_000);
+        factory.deployXPolyERC20(channels, _data.name, _data.symbol, 1_000_000_000, vm.envString('SALT'));
 
       // solhint-disable-next-line no-console
       console.log('factory deployed on Base chain at:', address(factory));
@@ -93,6 +93,7 @@ contract PolyERC20Deploy is Script {
   }
 
   function run() external {
-    deployPolyERC20();
+    //    deployPolyERC20();
+    deployPolyERC20WithFactory();
   }
 }
